@@ -8,6 +8,10 @@ from komitas.html.attributes import (
     ScriptAttribute,
     HxAttribute,
 )
+
+from typing import Union
+
+
 class InteractiveComponent:
     pass
 
@@ -26,6 +30,7 @@ class Tag(Element):
 
     def __init__(self):
         super().__init__(self.__class__.__name__.lower())
+        self.elements :list[Tag] = []
 
     @classmethod
     def __extend_attributes(cls):
@@ -45,6 +50,11 @@ class Tag(Element):
         for element in elements:
             # if isinstance(element, InteractiveComponent):
             #     element = element()
+            self.elements.append(element)
+
+    def build(self):
+        for element in self.elements:
+            element.build()
             self.append(element)
         return self
 
