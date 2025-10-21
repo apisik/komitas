@@ -1,0 +1,18 @@
+[project]
+name = "komitas"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "starlette>=0.48.0",
+    "starlit>=0.1.0",
+    "uvicorn>=0.38.0",
+]
+
+[project.scripts]
+komitas = "komitas:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
