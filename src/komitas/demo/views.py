@@ -7,16 +7,18 @@ from xml.etree import ElementTree as ET
 class ineractive_button(InteractiveComponent):
     def __init__(self):
         self.text = "Click Me!"
+        self.id = "demo-button"
 
     def __call__(self, *args, **kwds):
         return Button(self.text).attrs(
             (Class, "btn btn-primary mx-auto d-block mt-4"),
-            (Id, "demo-button"),
+            (Id, self.id),
             (Hx_Get, ""),
             (Hx_Swap, "outerHTML"),
+            (Hx_Vals, f'{{"text": "{self.text}"}}'),
         )
-    
-    def update_state(self):
+
+    def update_state(self, text):
         text_options = [
             "Click Me!",
             "You Clicked Me!",
@@ -26,34 +28,39 @@ class ineractive_button(InteractiveComponent):
             "Alright, That's Enough!",
         ]
 
-        current_index = text_options.index(self.text)
+        current_index = text_options.index(text)
         next_index = (current_index + 1) % len(text_options)
         self.text = text_options[next_index]
 
 
+class static_component(StaticComponent):
+    def __init__(self):
+        super().__init__()
 
-
-ibutton = ineractive_button()
-
-
-body = (
-    Div()
-    .attrs((Class, "container"))
-    .innrs(
-        H1("Demo Page").attrs((Class, "text-center mt-5")),
-        P("This is a simple demo page that showcases functionality!").attrs(
-            (Class, "lead text-center")
-        ),
-        ibutton(),
-    )
-)
+    def __call__(self, *args, **kwds):
+        return (
+            Div()
+            .attrs((Class, "container"))
+            .innrs(
+                H1("Demo Page").attrs((Class, "text-center mt-5")),
+                P("This is a simple demo page that showcases functionality!").attrs(
+                    (Class, "lead text-center")
+                ),
+                ineractive_button(),
+            )
+        )
 
 
 class View:
     def render(self, request) -> str:
         # check if hx-request header is present
         if "HX-Request" in request.headers:
-            return self.index_partial(request.headers["HX-Target"])
+
+            query_params = request.query_params
+
+            print(request.url)
+
+            return self.index_partial(request.headers["HX-Target"], query_params)
         else:
             return self.index()
 
@@ -65,8 +72,7 @@ class View:
 
 
 class DemoView(View):
-
-    def set_html(self):
+    def __init__(self):
         self.html = (
             HTML()
             .attrs(
@@ -100,7 +106,7 @@ class DemoView(View):
                     ),
                 ),
                 Body().innrs(
-                    body,
+                    static_component(),
                     Script().attrs(
                         (
                             Src,
@@ -117,16 +123,12 @@ class DemoView(View):
         )
 
     def index(self) -> str:
-        self.set_html()
-        return ET.tostring(self.html, encoding="unicode", short_empty_elements=False)
+        return ET.tostring(
+            self.html.build(), encoding="unicode", short_empty_elements=False
+        )
 
-    def index_partial(self, target) -> str:
+    def index_partial(self, target, params) -> str:
         # get the element with the given id
-        self.set_html()
-        target = self.html.find(f".//*[@id='{target}']")
-
-
-
-        ibutton.update_state()
-        self.set_html()
-        return ET.tostring(ibutton(), encoding="unicode", short_empty_elements=False)
+        target = self.html.build().find(f".//*[@id='{target}']")
+        target.obj.update_state(params.get("text", "Click Me!"))
+        return ET.tostring(target.obj(), encoding="unicode", short_empty_elements=False)

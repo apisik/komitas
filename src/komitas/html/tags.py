@@ -12,10 +12,6 @@ from komitas.html.attributes import (
 from typing import Union
 
 
-class InteractiveComponent:
-    pass
-
-
 class Tag(Element):
     allowed_attributes = [
         GlobalAttribute,
@@ -30,7 +26,8 @@ class Tag(Element):
 
     def __init__(self):
         super().__init__(self.__class__.__name__.lower())
-        self.elements :list[Tag] = []
+        self.elements: list[Tag] = []
+        self.interactive_components: dict[str, InteractiveComponent] = {}
 
     @classmethod
     def __extend_attributes(cls):
@@ -48,16 +45,32 @@ class Tag(Element):
 
     def innrs(self, *elements: Element):
         for element in elements:
-            # if isinstance(element, InteractiveComponent):
-            #     element = element()
             self.elements.append(element)
+        return self
 
     def build(self):
         for element in self.elements:
+            if issubclass(element.__class__, InteractiveComponent) and isinstance(element, InteractiveComponent):
+                element_temp = element()
+                element_temp.obj = element
+                element = element_temp
+            if issubclass(element.__class__, StaticComponent):
+                element = element()
+
+            if not isinstance(element, Element):
+                raise TypeError(
+                    f"Element {element} is not an instance of ElementTree.Element"
+                )
             element.build()
             self.append(element)
         return self
 
+
+class InteractiveComponent(Tag):
+    pass
+
+class StaticComponent(Tag):
+    pass
 
 # Main Root
 
