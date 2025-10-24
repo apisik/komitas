@@ -1,7 +1,10 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
+from komitas.component import *
 
 from xml.etree import ElementTree as ET
+
+import inspect
 
 
 class ineractive_button(InteractiveComponent):
@@ -33,19 +36,40 @@ class ineractive_button(InteractiveComponent):
         self.text = text_options[next_index]
 
 
-class static_component(StaticComponent):
+class Introduction(Component):
     def __init__(self):
         super().__init__()
 
     def __call__(self, *args, **kwds):
         return (
             Div()
-            .attrs((Class, "container"))
+            .attrs((Class, "container d-flex flex-column"))
             .innrs(
-                H1("Demo Page").attrs((Class, "text-center mt-5")),
-                P("This is a simple demo page that showcases functionality!").attrs(
-                    (Class, "lead text-center")
+                H1().attrs((Class, "text-center mt-5")).innrs("Komitas"),
+                P()
+                .attrs((Class, "text-center"))
+                .innrs(
+                    "An ",
+                    Span(Strong("expirimental")).attrs(
+                        (Class, "text-decoration-underline fst-italic")
+                    ),
+                    " framework for building web applications in Python",
                 ),
+                P()
+                .innrs(
+                    "The current prevalent idea behind a lot of python web frameworks is to use ",
+                    "templates to generate HTML server side. Komitas takes a different approach: ",
+                    "in Komitas, HTML elements are represented as Python objects, allowing you to build ",
+                    "your entire web application using pure Python code.",
+                )
+                .attrs((Class, "text-center")),
+                Pre()
+                .innrs(
+                    Code(inspect.getsource(Introduction)).attrs(
+                        (Class, "language-python")
+                    )
+                )
+                .attrs((Class, "my-4 mx-auto")),
                 ineractive_button(),
             )
         )
@@ -55,7 +79,6 @@ class View:
     def render(self, request) -> str:
         # check if hx-request header is present
         if "HX-Request" in request.headers:
-
             query_params = request.query_params
 
             print(request.url)
@@ -104,9 +127,30 @@ class DemoView(View):
                             "https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js",
                         ),
                     ),
+                    Link().attrs(
+                        (
+                            Href,
+                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/an-old-hope.min.css",
+                        ),
+                        (Rel, "stylesheet"),
+                    ),
+                    Script().attrs(
+                        (
+                            Src,
+                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js",
+                        ),
+                    ),
+                    # Script().attrs(
+                    #     (
+                    #         Src,
+                    #         "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js",
+                    #     ),
+                    # ),
                 ),
-                Body().innrs(
-                    static_component(),
+                Body()
+                .attrs((Class, "bg-dark text-white vh-100"))
+                .innrs(
+                    Introduction(),
                     Script().attrs(
                         (
                             Src,
@@ -118,6 +162,8 @@ class DemoView(View):
                         ),
                         (Crossorigin, "anonymous"),
                     ),
+                    # Script("hljs.registerLanguage('python', window.hljsDefinePython);"),
+                    Script("hljs.highlightAll();"),
                 ),
             )
         )
