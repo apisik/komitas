@@ -1,7 +1,7 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.component import *
-
+from komitas.demo.components import *
 from xml.etree import ElementTree as ET
 
 import inspect
@@ -37,9 +37,6 @@ class ineractive_button(InteractiveComponent):
 
 
 class Introduction(Component):
-    def __init__(self):
-        super().__init__()
-
     def __call__(self, *args, **kwds):
         return (
             Div()
@@ -55,22 +52,49 @@ class Introduction(Component):
                     ),
                     " framework for building web applications in Python",
                 ),
-                P()
-                .innrs(
-                    "The current prevalent idea behind a lot of python web frameworks is to use ",
-                    "templates to generate HTML server side. Komitas takes a different approach: ",
-                    "in Komitas, HTML elements are represented as Python objects, allowing you to build ",
-                    "your entire web application using pure Python code.",
+                Div()
+                .attrs(
+                    (Class, "text-start"),
                 )
-                .attrs((Class, "text-center")),
-                Pre()
                 .innrs(
-                    Code(inspect.getsource(Introduction)).attrs(
-                        (Class, "language-python")
-                    )
-                )
-                .attrs((Class, "my-4 mx-auto")),
-                ineractive_button(),
+                    P().innrs(
+                        "The current prevalent idea behind a lot of python web frameworks is to use ",
+                        "templates to generate HTML server side. ",
+                        "There are some attempts to challenge this templating paradigm using ",
+                        "Domain Specific Languages (DSLs) which allow you to express HTML in pure python, ",
+                        "but I always felt these framework fall short in their value proposition. ",
+                        "If I have to learn a new DSL to use a framework and still have to deal with a lot of the ",
+                        "same overhead as traditional frameworks, why not just use templates directly? ",
+                    ),
+                    P("Two prominent value propositions are: "),
+                    DD().innrs(
+                        DT().innrs("1. Component Architecture"),
+                        DD().innrs(
+                            "This is nice, but its possible to do something similar ",
+                            "with templates using partial templates and includes. ",
+                            "Although not as elegant, it does get the job done.",
+                        ),
+                        DT().innrs("2. First Class HTMX Support"),
+                        DD().innrs(
+                            "Again, nice, but the first class support implemented doesnt solve ",
+                            "one of the biggest problems I have with HTMX. ",
+                            "Which is the need for unique endpoints for every interactive component. ",
+                            "This means that for every button, form, or other interactive element ",
+                            "you generally create separate endpoint to handle its requests. ",
+                        ),
+                    ),
+                    Hr(),
+                    H6("The idea motivating Komitas is..."),
+                    P().attrs(
+                        (Class, "lead"),
+                    ).innrs(
+                        "A properly deigned DSL, should be able to express what ",
+                        "we want and it should simply work. I draw a lot of inspiration from FastAPI's ",
+                        "auto documenetation. Zero cost and it just works. ",
+                        "Komitas aims to have a similar zero cost integration with HTMX. ",
+                    ),
+                    Hr(),
+                ),
             )
         )
 
@@ -96,77 +120,11 @@ class View:
 
 class DemoView(View):
     def __init__(self):
-        self.html = (
-            HTML()
-            .attrs(
-                (Lang, "en"),
-            )
-            .innrs(
-                Head().innrs(
-                    Meta().attrs((Charset, "UTF-8")),
-                    Meta().attrs(
-                        (Name, "viewport"),
-                        (Content, "width=device-width, initial-scale=1.0"),
-                    ),
-                    Title("Bootstrap Demo"),
-                    Link().attrs(
-                        (
-                            Href,
-                            "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
-                        ),
-                        (Rel, "stylesheet"),
-                        (
-                            Integrity,
-                            "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
-                        ),
-                        (Crossorigin, "anonymous"),
-                    ),
-                    Script().attrs(
-                        (
-                            Src,
-                            "https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js",
-                        ),
-                    ),
-                    Link().attrs(
-                        (
-                            Href,
-                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/an-old-hope.min.css",
-                        ),
-                        (Rel, "stylesheet"),
-                    ),
-                    Script().attrs(
-                        (
-                            Src,
-                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js",
-                        ),
-                    ),
-                    # Script().attrs(
-                    #     (
-                    #         Src,
-                    #         "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js",
-                    #     ),
-                    # ),
-                ),
-                Body()
-                .attrs((Class, "bg-dark text-white vh-100"))
-                .innrs(
-                    Introduction(),
-                    Script().attrs(
-                        (
-                            Src,
-                            "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
-                        ),
-                        (
-                            Integrity,
-                            "sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
-                        ),
-                        (Crossorigin, "anonymous"),
-                    ),
-                    # Script("hljs.registerLanguage('python', window.hljsDefinePython);"),
-                    Script("hljs.highlightAll();"),
-                ),
-            )
-        )
+        self.html = KomitasDemoBasePage(
+            innrs=[
+                Introduction(),
+            ]
+        )()
 
     def index(self) -> str:
         return ET.tostring(

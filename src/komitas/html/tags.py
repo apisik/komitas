@@ -157,10 +157,22 @@ class Script(Tag):
 
 
 class H1(Tag):
-    def __init__(self, text: str = ""):
-        super().__init__()
-        self.text = text
+    pass
 
+class H2(Tag):
+    pass
+
+class H3(Tag):
+    pass
+
+class H4(Tag):
+    pass
+
+class H5(Tag):
+    pass
+
+class H6(Tag):
+    pass
 
 class Div(Tag):
     pass
@@ -189,4 +201,19 @@ class Strong(Tag):
 
 
 class Span(Tag):
+    pass
+
+
+class DD(Tag):
+    pass
+
+
+class DL(Tag):
+    pass
+
+
+class DT(Tag):
+    pass
+
+class Hr(Tag):
     pass
