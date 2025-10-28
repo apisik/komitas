@@ -14,7 +14,7 @@ class ineractive_button(InteractiveComponent):
 
     def __call__(self, *args, **kwds):
         return Button(self.text).attrs(
-            (Class, "btn btn-primary mx-auto d-block mt-4"),
+            (Class, "btn btn-primary"),
             (Id, self.id),
             (Hx_Get, ""),
             (Hx_Swap, "outerHTML"),
@@ -36,67 +36,29 @@ class ineractive_button(InteractiveComponent):
         self.text = text_options[next_index]
 
 
-class Introduction(Component):
+class TwoColumnLayout(Component):
+    def __init__(self, left: Component, right: Component):
+        self.left = left
+        self.right = right
+
     def __call__(self, *args, **kwds):
         return (
             Div()
-            .attrs((Class, "container d-flex flex-column"))
+            .attrs((Class, "container-fluid text-center"))
             .innrs(
-                H1().attrs((Class, "text-center mt-5")).innrs("Komitas"),
-                P()
-                .attrs((Class, "text-center"))
-                .innrs(
-                    "An ",
-                    Span(Strong("expirimental")).attrs(
-                        (Class, "text-decoration-underline fst-italic")
-                    ),
-                    " framework for building web applications in Python",
-                ),
                 Div()
-                .attrs(
-                    (Class, "text-start"),
-                )
+                .attrs((Class, "row"))
                 .innrs(
-                    P().innrs(
-                        "The current prevalent idea behind a lot of python web frameworks is to use ",
-                        "templates to generate HTML server side. ",
-                        "There are some attempts to challenge this templating paradigm using ",
-                        "Domain Specific Languages (DSLs) which allow you to express HTML in pure python, ",
-                        "but I always felt these framework fall short in their value proposition. ",
-                        "If I have to learn a new DSL to use a framework and still have to deal with a lot of the ",
-                        "same overhead as traditional frameworks, why not just use templates directly? ",
-                    ),
-                    P("Two prominent value propositions are: "),
-                    DD().innrs(
-                        DT().innrs("1. Component Architecture"),
-                        DD().innrs(
-                            "This is nice, but its possible to do something similar ",
-                            "with templates using partial templates and includes. ",
-                            "Although not as elegant, it does get the job done.",
-                        ),
-                        DT().innrs("2. First Class HTMX Support"),
-                        DD().innrs(
-                            "Again, nice, but the first class support implemented doesnt solve ",
-                            "one of the biggest problems I have with HTMX. ",
-                            "Which is the need for unique endpoints for every interactive component. ",
-                            "This means that for every button, form, or other interactive element ",
-                            "you generally create separate endpoint to handle its requests. ",
-                        ),
-                    ),
-                    Hr(),
-                    H6("The idea motivating Komitas is..."),
-                    P().attrs(
-                        (Class, "lead"),
-                    ).innrs(
-                        "A properly deigned DSL, should be able to express what ",
-                        "we want and it should simply work. I draw a lot of inspiration from FastAPI's ",
-                        "auto documenetation. Zero cost and it just works. ",
-                        "Komitas aims to have a similar zero cost integration with HTMX. ",
-                    ),
-                    Hr(),
-                ),
+                    Div().attrs((Class, "col-6")).innrs(self.left),
+                    Div().attrs((Class, "col-6")).innrs(self.right),
+                )
             )
         )
+
+
+class LeftAlignedCodeBlock(Component):
+    def __call__(self, code, *args, **kwds):
+        return Pre().attrs((Class, "text-start")).innrs(Code().innrs(code))
 
 
 class View:
@@ -122,7 +84,14 @@ class DemoView(View):
     def __init__(self):
         self.html = KomitasDemoBasePage(
             innrs=[
-                Introduction(),
+                Div()
+                .attrs((Class, "container"))
+                .innrs(
+                    Introduction(),
+                    KomitasVision(),
+                    # LeftAlignedCodeBlock()(inspect.getsource(Tag)),
+                    # ineractive_button(),
+                )
             ]
         )()
 

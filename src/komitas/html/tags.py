@@ -15,6 +15,11 @@ from komitas.component import InteractiveComponent, Component
 
 
 class Tag(Element):
+    """
+    The `Tag` element serves as the base class for all HTML tags in
+    this framework.
+    """
+
     allowed_attributes = [
         GlobalAttribute,
         HxAttribute,
@@ -49,7 +54,7 @@ class Tag(Element):
             attribute(self, value)
         return self
 
-    def innrs(self, *elements: Union[Tag, str, Component, InteractiveComponent]):
+    def innrs(self, *elements: Union[str, Component, InteractiveComponent, "Tag"]):
         for element in elements:
             self.elements.append(element)
         return self
@@ -159,20 +164,26 @@ class Script(Tag):
 class H1(Tag):
     pass
 
+
 class H2(Tag):
     pass
+
 
 class H3(Tag):
     pass
 
+
 class H4(Tag):
     pass
+
 
 class H5(Tag):
     pass
 
+
 class H6(Tag):
     pass
+
 
 class Div(Tag):
     pass
@@ -214,6 +225,7 @@ class DL(Tag):
 
 class DT(Tag):
     pass
+
 
 class Hr(Tag):
     pass
