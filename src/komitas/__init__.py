@@ -7,8 +7,9 @@ import subprocess
 from starlette.applications import Starlette
 from starlette.responses import Response
 from livereload import Server
+import threading
 
-app = Starlette(debug=True)
+app = Starlette()
 
 
 @app.route("/")
@@ -16,11 +17,17 @@ def index(request) -> str:
     return Response(DemoView().render(request), media_type="text/html")
 
 
-def main() -> None:
-    
-    subprocess.run(["uvicorn", "komitas:app", "--reload"])
+def run() -> None:
+    subprocess.Popen(
+        ["uvicorn", "komitas:app", "--reload"],
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.PIPE,
+    )
 
-def rserver() -> None:
-    server = Server(app)
-    server.watch("src/", delay=5)
-    server.serve(port=35729, host="127.0.0.1", root="*")
+
+def main() -> None:
+    run()
+
+    server = Server()
+    server.watch("src/", delay=1)
+    server.serve(port=35729, host="127.0.0.1")

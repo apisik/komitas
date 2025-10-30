@@ -136,7 +136,7 @@ class Introduction(Component):
                     P().innrs(
                         "This means in addition to being able to declare the structure ",
                         "of your HTML in pure python, Komitas also provides a way to declare ",
-                        "interactivity.", 
+                        "interactivity.",
                     ),
                 ),
             )
@@ -145,11 +145,22 @@ class Introduction(Component):
 
 class LeftAlignedCodeBlock(Component):
     def __call__(self, code, *args, **kwds):
+        lang = "language-python" if ("<" != code.lstrip()[0]) else "language-html"
 
         # delete first line and 4 spaces from each line
-        code = "\n".join(line[4:] for line in code.splitlines()[1:])
+        lines = code.split("\n")
+        # delete first line
+        lines = lines[1:]
+        # if starts with < do nothing else remove 4 spaces
+        code = "\n".join(
+            line[4:] if lang == "language-python" else line for line in lines
+        )
 
-        return Pre().attrs((Class, "text-start")).innrs(Code().innrs(code))
+        return (
+            Pre()
+            .attrs((Class, "text-start"))
+            .innrs(Code().attrs((Class, lang)).innrs(code))
+        )
 
 
 class KomitasVision(Component):
@@ -158,20 +169,30 @@ class KomitasVision(Component):
             Div()
             .attrs((Class, "container-fluid d-flex flex-column"))
             .innrs(
-                H2().attrs((Class, "text-center mt-5")).innrs("HTML is Just XML"),
-                Div().attrs(
-                    (Class, "text-start")
-                ).innrs(
+                H2().attrs((Class, "text-center mt-1")).innrs("HTML is Just XML"),
+                Div()
+                .attrs((Class, "text-start"))
+                .innrs(
                     P().innrs(
                         "To build a DSL for HTML in python, we shouldn't ",
-                        "try to reinvent the wheel. The ", Code("xml").attrs((Class, "language-python")),
+                        "try to reinvent the wheel. The ",
+                        Code("xml").attrs((Class, "language-python")),
                         " module in the python standard library provides us with ",
                         "majority of the functionality we need to represent HTML. ",
-                        "What I find lacking in the ", 
+                        "What I find lacking in the ",
                         Code("xml").attrs((Class, "language-python")),
                         " module is ergonomics.",
                     ),
-                LeftAlignedCodeBlock()(inspect.getsource(snippets.ExmapleCode))
+                    LeftAlignedCodeBlock()(inspect.getsource(snippets.ExmapleCode)),
+                    P("outputs"),
+                    LeftAlignedCodeBlock()(snippets.ExmapleCode.output),
+                    P().innrs(
+                        "Using Komitas, we can express the same HTML structure ",
+                        "in a more ergonomic way:",
+                    ),
+                    LeftAlignedCodeBlock()(inspect.getsource(snippets.ExampleCode2)),
+                    P("outputs"),
+                    LeftAlignedCodeBlock()(snippets.ExampleCode2.output),
                 ),
             )
         )

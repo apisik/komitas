@@ -97,7 +97,10 @@ class DemoView(View):
 
     def index(self) -> str:
         return ET.tostring(
-            self.html.build(), encoding="unicode", short_empty_elements=False
+            self.html.build(),
+            encoding="unicode",
+            method="html",
+            short_empty_elements=False,
         )
 
     def index_partial(self, target, params) -> str:
