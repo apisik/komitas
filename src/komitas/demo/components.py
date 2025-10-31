@@ -1,6 +1,7 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.component import *
+from komitas.bootstrap import *
 from komitas.demo import snippets
 import inspect
 
@@ -70,7 +71,7 @@ class KomitasDemoBasePage(Component):
                     ),
                 ),
                 Body()
-                .attrs((Class, "bg-dark text-white vh-100"))
+                .attrs((Data_Bs_Theme, "dark"))
                 .innrs(
                     *self.innrs,
                     Script().attrs(
@@ -167,8 +168,11 @@ class KomitasVision(Component):
     def __call__(self, *args, **kwds):
         return (
             Div()
-            .attrs((Class, "container-fluid d-flex flex-column"))
+            .attrs(
+                (Class, "container-fluid d-flex flex-column"),
+            )
             .innrs(
+                # BootstrapHeader(),
                 H2().attrs((Class, "text-center mt-1")).innrs("HTML is Just XML"),
                 Div()
                 .attrs((Class, "text-start"))

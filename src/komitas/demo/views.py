@@ -2,6 +2,7 @@ from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.component import *
 from komitas.demo.components import *
+from komitas.bootstrap import *
 from xml.etree import ElementTree as ET
 
 import inspect
@@ -61,7 +62,7 @@ class LeftAlignedCodeBlock(Component):
         return Pre().attrs((Class, "text-start")).innrs(Code().innrs(code))
 
 
-class View:
+class App:
     def render(self, request) -> str:
         # check if hx-request header is present
         if "HX-Request" in request.headers:
@@ -80,15 +81,13 @@ class View:
         raise NotImplementedError
 
 
-class DemoView(View):
+class DemoApp(App):
     def __init__(self):
         self.html = KomitasDemoBasePage(
             innrs=[
-                Div()
-                .attrs((Class, "container"))
-                .innrs(
-                    Introduction(),
-                    KomitasVision(),
+                Div().innrs(
+                    BootstrapHeader(BootstrapHeaderModel()),
+                    # KomitasVision(),
                     # LeftAlignedCodeBlock()(inspect.getsource(Tag)),
                     # ineractive_button(),
                 )
@@ -106,5 +105,7 @@ class DemoView(View):
     def index_partial(self, target, params) -> str:
         # get the element with the given id
         target = self.html.build().find(f".//*[@id='{target}']")
-        target.obj.update_state(params.get("text", "Click Me!"))
-        return ET.tostring(target.obj(), encoding="unicode", short_empty_elements=False)
+        target.obj.update_state(params)
+        return ET.tostring(
+            target.obj().build(), encoding="unicode", short_empty_elements=False
+        )

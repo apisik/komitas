@@ -20,11 +20,11 @@ class ExampleCode2:
     from xml.dom import minidom
 
     html = HTML().innrs(
-        Head().innrs(
-            Title().innrs("Example Page"),
+        Head(
+            Title("Example Page"),
         ),
-        Body().innrs(
-            H1().innrs("Hello, World!"),
+        Body(
+            H1("Hello, World!"),
         ),
     )
 

@@ -1,6 +1,6 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.demo.views import DemoView
+from komitas.demo.views import DemoApp
 from xml.etree import ElementTree as ET
 import uvicorn
 import subprocess
@@ -14,7 +14,7 @@ app = Starlette()
 
 @app.route("/")
 def index(request) -> str:
-    return Response(DemoView().render(request), media_type="text/html")
+    return Response(DemoApp().render(request), media_type="text/html")
 
 
 def run() -> None:

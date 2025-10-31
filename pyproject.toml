@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "livereload>=2.7.1",
+    "pydantic>=2.12.3",
     "starlette>=0.48.0",
     "starlit>=0.1.0",
     "uvicorn>=0.38.0",

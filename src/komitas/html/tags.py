@@ -7,6 +7,7 @@ from komitas.html.attributes import (
     LinkAttribute,
     ScriptAttribute,
     HxAttribute,
+    AriaLabel,
 )
 
 from typing import Union
@@ -23,6 +24,7 @@ class Tag(Element):
     allowed_attributes = [
         GlobalAttribute,
         HxAttribute,
+        AriaLabel,
     ]
 
     attribute_extensions = []
@@ -228,4 +230,24 @@ class DT(Tag):
 
 
 class Hr(Tag):
+    pass
+
+
+class Header(Tag):
+    pass
+
+
+class Ul(Tag):
+    pass
+
+
+class Li(Tag):
+    pass
+
+
+class Svg(Tag):
+    pass
+
+
+class Use(Tag):
     pass

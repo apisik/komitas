@@ -94,6 +94,26 @@ class AriaLabel(Attribute):
     pass
 
 
+class Aria_Hidden(AriaLabel):
+    pass
+
+
+class Aria_Current(AriaLabel):
+    pass
+
+
+class Width(GlobalAttribute):
+    pass
+
+
+class Height(GlobalAttribute):
+    pass
+
+
+class Data_Bs_Theme(GlobalAttribute):
+    pass
+
+
 # htmx attributes
 class HxAttribute(Attribute):
     pass
@@ -108,4 +128,8 @@ class Hx_Vals(HxAttribute):
 
 
 class Hx_Swap(HxAttribute):
+    pass
+
+
+class Hx_Target(HxAttribute):
     pass
