@@ -1,8 +1,9 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.component import *
+from komitas.components import *
 from komitas.demo.components import *
 from komitas.bootstrap import *
+from komitas.pages import *
 from xml.etree import ElementTree as ET
 
 import inspect
@@ -62,7 +63,7 @@ class LeftAlignedCodeBlock(Component):
         return Pre().attrs((Class, "text-start")).innrs(Code().innrs(code))
 
 
-class App:
+class SinglePageApp:
     def render(self, request) -> str:
         # check if hx-request header is present
         if "HX-Request" in request.headers:
@@ -81,12 +82,23 @@ class App:
         raise NotImplementedError
 
 
-class DemoApp(App):
+class DemoSinglePageApp(SinglePageApp):
     def __init__(self):
+        self.AppBar = BootstrapHeader(BootstrapHeaderModel())
+        self.Views = [
+            IntroducitonPage(),
+            MotivationPage(),
+            # PrinciplesPage(),
+            # ComponentsPage(),
+        ]
+
+        self.AciveView = self.Views[0]
+
         self.html = KomitasDemoBasePage(
             innrs=[
                 Div().innrs(
-                    BootstrapHeader(BootstrapHeaderModel()),
+                    self.AppBar,
+                    self.AciveView
                     # KomitasVision(),
                     # LeftAlignedCodeBlock()(inspect.getsource(Tag)),
                     # ineractive_button(),

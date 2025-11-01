@@ -1,6 +1,6 @@
 from komitas.html.attributes import *
 from komitas.html.tags import *
-from komitas.component import *
+from komitas.components import *
 
 from pydantic import BaseModel
 
