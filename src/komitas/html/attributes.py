@@ -134,5 +134,6 @@ class Hx_Swap(HxAttribute):
 class Hx_Target(HxAttribute):
     pass
 
+
 class Hx_Swap_Oob(HxAttribute):
     pass

@@ -1,4 +1,3 @@
-
 class SinglePageApp:
     def render(self, request) -> str:
         # check if hx-request header is present

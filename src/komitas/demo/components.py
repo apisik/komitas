@@ -9,11 +9,7 @@ from typing import Union
 
 
 class KomitasDemoHTMLBase(Component):
-    def __init__(
-        self, 
-        title: str = "Komitas Demo", 
-        innrs: Union[Tag, NoneType] = None
-    ):
+    def __init__(self, title: str = "Komitas Demo", innrs: Union[Tag, NoneType] = None):
         self.title = title
         self.innrs = innrs
 
@@ -30,9 +26,7 @@ class KomitasDemoHTMLBase(Component):
                         (Name, "viewport"),
                         (Content, "width=device-width, initial-scale=1.0"),
                     ),
-                    Title().innrs(
-                        self.title
-                    ),
+                    Title().innrs(self.title),
                     Link().attrs(
                         (
                             Href,

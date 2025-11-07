@@ -20,7 +20,7 @@ class BootstrapHeader(InteractiveComponent):
         if "active_page" in params:
             self.active_page = params["active_page"]
 
-        return params['active_page']
+        return params["active_page"]
 
     def __call__(self):
         return (
