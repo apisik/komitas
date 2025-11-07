@@ -1,6 +1,5 @@
 from komitas.html.attributes import *
 from komitas.html.tags import *
-from komitas.components import *
 
 from pydantic import BaseModel
 
@@ -8,7 +7,7 @@ from pydantic import BaseModel
 class BootstrapHeaderModel(BaseModel):
     id: str = "bootstrap-header"
     LogoText: str = "Komitas"
-    Pages: list[str] = ["About", "Motivation", "Principles", "Components"]
+    Pages: list[str] = ["Introduction", "Motivation"]
 
 
 class BootstrapHeader(InteractiveComponent):
@@ -20,6 +19,8 @@ class BootstrapHeader(InteractiveComponent):
     def update_state(self, params):
         if "active_page" in params:
             self.active_page = params["active_page"]
+
+        return params['active_page']
 
     def __call__(self):
         return (

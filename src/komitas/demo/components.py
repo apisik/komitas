@@ -1,6 +1,5 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.components import *
 from komitas.bootstrap import *
 from komitas.demo import snippets
 import inspect
@@ -9,9 +8,11 @@ from types import NoneType
 from typing import Union
 
 
-class KomitasDemoBasePage(Component):
+class KomitasDemoHTMLBase(Component):
     def __init__(
-        self, title: Union[str, NoneType] = None, innrs: Union[Tag, NoneType] = None
+        self, 
+        title: str = "Komitas Demo", 
+        innrs: Union[Tag, NoneType] = None
     ):
         self.title = title
         self.innrs = innrs
@@ -30,7 +31,7 @@ class KomitasDemoBasePage(Component):
                         (Content, "width=device-width, initial-scale=1.0"),
                     ),
                     Title().innrs(
-                        self.title if self.title is not None else "Komitas Demo"
+                        self.title
                     ),
                     Link().attrs(
                         (

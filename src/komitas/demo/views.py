@@ -1,89 +1,56 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.components import *
 from komitas.demo.components import *
 from komitas.bootstrap import *
-from komitas.pages import *
+from komitas.application.spa import SinglePageApp
 from xml.etree import ElementTree as ET
 
-import inspect
+from komitas.html.tags import *
+from komitas.html.attributes import *
 
-
-class ineractive_button(InteractiveComponent):
-    def __init__(self):
-        self.text = "Click Me!"
-        self.id = "demo-button"
-
-    def __call__(self, *args, **kwds):
-        return Button(self.text).attrs(
-            (Class, "btn btn-primary"),
-            (Id, self.id),
-            (Hx_Get, ""),
-            (Hx_Swap, "outerHTML"),
-            (Hx_Vals, f'{{"text": "{self.text}"}}'),
+class IntroducitonPage(Component):
+    def __call__(self):
+        return Div().attrs(
+            (Class, "container mt-4"),
+            (Id, "view")
+        ).innrs(
+            H1("Welcome to Komitas"),
+            P(
+                "Komitas is a modern web framework designed to simplify the "
+                "process of building interactive web applications using "
+                "component-based architecture."
+            ),
+            H2("Getting Started"),
+            P(
+                "To get started with Komitas, check out the documentation "
+                "and explore the various components and features available."
+            ),
         )
-
-    def update_state(self, text):
-        text_options = [
-            "Click Me!",
-            "You Clicked Me!",
-            "Click Again!",
-            "Keep Clicking!",
-            "You're Persistent!",
-            "Alright, That's Enough!",
-        ]
-
-        current_index = text_options.index(text)
-        next_index = (current_index + 1) % len(text_options)
-        self.text = text_options[next_index]
-
-
-class TwoColumnLayout(Component):
-    def __init__(self, left: Component, right: Component):
-        self.left = left
-        self.right = right
-
-    def __call__(self, *args, **kwds):
-        return (
-            Div()
-            .attrs((Class, "container-fluid text-center"))
-            .innrs(
-                Div()
-                .attrs((Class, "row"))
-                .innrs(
-                    Div().attrs((Class, "col-6")).innrs(self.left),
-                    Div().attrs((Class, "col-6")).innrs(self.right),
-                )
-            )
+    
+class MotivationPage(Component):
+    def __call__(self):
+        return Div().attrs(
+            (Class, "container mt-4"),
+            (Id, "view"),
+            (Hx_Swap_Oob, "true"),
+        ).innrs(
+            H1("Motivation"),
+            P(
+                "The motivation behind Komitas is to provide developers with "
+                "a powerful yet easy-to-use framework that leverages Python's "
+                "capabilities for web development."
+            ),
+            P(
+                "By focusing on components, Komitas allows for reusable and "
+                "maintainable code, making it easier to build complex UIs."
+            ),
         )
-
-
-class LeftAlignedCodeBlock(Component):
-    def __call__(self, code, *args, **kwds):
-        return Pre().attrs((Class, "text-start")).innrs(Code().innrs(code))
-
-
-class SinglePageApp:
-    def render(self, request) -> str:
-        # check if hx-request header is present
-        if "HX-Request" in request.headers:
-            query_params = request.query_params
-
-            print(request.url)
-
-            return self.index_partial(request.headers["HX-Target"], query_params)
-        else:
-            return self.index()
-
-    def index(self) -> str:
-        raise NotImplementedError
-
-    def index_partial(self, target) -> str:
-        raise NotImplementedError
-
 
 class DemoSinglePageApp(SinglePageApp):
     def __init__(self):
+
+        self.base_html = KomitasDemoHTMLBase
+
         self.AppBar = BootstrapHeader(BootstrapHeaderModel())
         self.Views = [
             IntroducitonPage(),
@@ -92,9 +59,14 @@ class DemoSinglePageApp(SinglePageApp):
             # ComponentsPage(),
         ]
 
+        self.html = None
+        self.AciveView = None
+    
+    def build(self):
+
         self.AciveView = self.Views[0]
 
-        self.html = KomitasDemoBasePage(
+        self.html = KomitasDemoHTMLBase(
             innrs=[
                 Div().innrs(
                     self.AppBar,
@@ -107,6 +79,10 @@ class DemoSinglePageApp(SinglePageApp):
         )()
 
     def index(self) -> str:
+
+        if self.html is None:
+            self.build()
+
         return ET.tostring(
             self.html.build(),
             encoding="unicode",
@@ -115,9 +91,30 @@ class DemoSinglePageApp(SinglePageApp):
         )
 
     def index_partial(self, target, params) -> str:
+
+        self.build()
+
         # get the element with the given id
         target = self.html.build().find(f".//*[@id='{target}']")
-        target.obj.update_state(params)
-        return ET.tostring(
+
+        oob = target.obj.update_state(params)
+
+        if oob is not None:
+            # find the element with the given id
+            
+            oob_target = self.html.find(f".//*[@id='{oob}']")
+        
+            # oob_html = ET.tostring(oob_target, encoding="unicode", short_empty_elements=False)
+
+            print("OOB HTML:", oob_target)
+
+        s1 =  ET.tostring(
             target.obj().build(), encoding="unicode", short_empty_elements=False
         )
+
+        s2 = self.Views[1]
+        s2 = ET.tostring(
+            s2().build(), encoding="unicode", short_empty_elements=False
+        )
+
+        return s1 + s2
