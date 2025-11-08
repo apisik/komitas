@@ -1,6 +1,6 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.bootstrap import *
+from komitas.bootstrap.base import *
 from komitas.demo import snippets
 import inspect
 

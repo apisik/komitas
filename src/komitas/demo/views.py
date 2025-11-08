@@ -1,7 +1,7 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.demo.components import *
-from komitas.bootstrap import *
+from komitas.bootstrap.base import *
 from komitas.application.spa import SinglePageApp
 from xml.etree import ElementTree as ET
 

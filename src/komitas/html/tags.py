@@ -12,7 +12,7 @@ from komitas.html.attributes import (
 
 from typing import Union
 from types import NoneType
-from komitas.component.base import Component, InteractiveComponent
+from komitas.application.component import Component, InteractiveComponent
 
 
 class Tag(Element):
