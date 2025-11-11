@@ -1,6 +1,6 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.demo.views import DemoSinglePageApp
+from komitas.demo.app import DemoSinglePageApp
 from xml.etree import ElementTree as ET
 import uvicorn
 import subprocess

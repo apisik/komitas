@@ -5,13 +5,13 @@ from komitas.html.attributes import *
 
 
 class NavbarModel(ComponentModel):
-    views: list[str] = ["Home", "About", "Contact"]
-    active_view: str = "Home"
-    LogoText: str = "Komitas"
+    views: list[InteractiveComponent]
+    active_view: InteractiveComponent
+    LogoText: str
 
 
 class NavbarButton(InteractiveComponent):
-    def __init__(self, model: NavbarModel, view: str):
+    def __init__(self, model: NavbarModel, view: InteractiveComponent):
         self.model = model
         self.view = view
 
@@ -25,11 +25,11 @@ class NavbarButton(InteractiveComponent):
                 (Class, "nav-item"),
                 (Hx_Get, ""),
                 (Hx_Swap, "outerHTML"),
-                (Hx_Target, f"#{self.view.lower()}-nav-link"),
-                (Id, f"{self.view.lower()}-nav-link"),
+                (Hx_Target, f"#{self.view.label.lower()}-nav-link"),
+                (Id, f"{self.view.label.lower()}-nav-link"),
             )
             .innrs(
-                A(self.view).attrs(
+                A(self.view.label).attrs(
                     (Href, "#"),
                     (
                         Class,
@@ -56,7 +56,6 @@ class Navbar(Component):
             Div()
             .attrs(
                 (Class, "container"),
-                # (Id, self.id),
             )
             .innrs(
                 Header()
@@ -85,4 +84,22 @@ class Navbar(Component):
                     ),
                 ),
             )
+        )
+
+
+class ViewContainer(InteractiveComponent):
+    def __init__(self, model: NavbarModel):
+        self.model = model
+
+    def update_state(self, params):
+        pass
+
+    def __call__(self):
+        return (
+            Div()
+            .attrs(
+                (Id, "view-container"),
+                (Class, "container mt-4"),
+            )
+            .innrs(self.model.active_view)
         )

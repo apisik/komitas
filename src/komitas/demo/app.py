@@ -7,37 +7,34 @@ from xml.etree import ElementTree as ET
 
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.application.component import ComponentModel
-import inspect
-import sys
-import gc
+from komitas.demo.views.home import HomeView, HomeModel
+from komitas.demo.views.todo import TodoView, TodoModel
 
 
 class DemoSinglePageApp(SinglePageApp):
     def __init__(self):
         self.base_html = KomitasDemoHTMLBase
+        self.views = [
+            HomeView(HomeModel()),
+            TodoView(TodoModel()),
+        ]
 
-        self.navbar_model = NavbarModel()
+        self.navbar_model = NavbarModel(
+            LogoText="Komitas Demo Application",
+            views=self.views,
+            active_view=self.views[0],
+        )
         self.AppBar = Navbar(self.navbar_model)
 
         self.html = None
-        self.AciveView = None
+        self.ActiveView = None
 
         # self.build()
         # self.html.build()
 
-    def get_refs(self, model_obj):
-        refs = gc.get_referrers(model_obj)
-
-        return refs
-
     def build(self):
         self.html = KomitasDemoHTMLBase(
-            innrs=[
-                Div().innrs(
-                    self.AppBar,
-                )
-            ]
+            innrs=[Div().innrs(self.AppBar, ViewContainer(self.navbar_model))]
         )()
 
     def index(self) -> str:
@@ -65,9 +62,7 @@ class DemoSinglePageApp(SinglePageApp):
         for e in target.obj.model.registered_components:
             if e == target.obj:
                 continue
-            # e.update_state(params)
             t = e()
-            # add hx-swap-oob attribute
             t.attrs((Hx_Swap_Oob, "true"))
             additional_html += ET.tostring(
                 t.build(), encoding="unicode", short_empty_elements=False
