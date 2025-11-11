@@ -145,9 +145,9 @@ class CollapsibleNavbar(Component):
                         (Id, "navbarSupportedContent"),
                     )
                     .innrs(
-                            Div().attrs(
-                                (Class, "ms-auto"),
-                            ),
+                        Div().attrs(
+                            (Class, "ms-auto"),
+                        ),
                         Ul()
                         .attrs((Class, "navbar-nav mb-2 mb-lg-0"))
                         .innrs(
