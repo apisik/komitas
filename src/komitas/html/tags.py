@@ -133,9 +133,7 @@ class Body(Tag):
 
 
 class P(Tag):
-    def __init__(self, text: str = ""):
-        super().__init__()
-        self.text = text
+    pass
 
 
 class A(Tag):

@@ -15,5 +15,14 @@ class HomeView(InteractiveComponent):
     def __call__(self):
         return Div().innrs(
             H2("Home View"),
-            P("Welcome to the Home view of the Komitas demo application."),
+            P().innrs(
+                """
+                Welcome to the Home view of the Komitas demo application.
+                This is a simple demonstration of a single-page application using Komitas.
+                """,
+            ),
+            P().innrs(
+                "Made with ❤️ by ",
+                A("Avo Pisikyan").attrs((Href, "https://avop.me")),
+            ),
         )
