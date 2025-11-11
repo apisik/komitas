@@ -6,6 +6,7 @@ import uvicorn
 import subprocess
 from starlette.applications import Starlette
 from starlette.responses import Response
+from starlette.requests import Request
 from livereload import Server
 import threading
 
@@ -13,7 +14,11 @@ app = Starlette()
 
 
 @app.route("/")
-def index(request) -> str:
+def index(request: Request) -> str:
+    for k, v in request.headers.items():
+        if k.lower().startswith("hx-"):
+            print(f"{k}: {v}")
+
     return Response(DemoSinglePageApp().render(request), media_type="text/html")
 
 

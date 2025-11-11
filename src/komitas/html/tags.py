@@ -89,9 +89,12 @@ class Tag(Element):
             if issubclass(element.__class__, InteractiveComponent) and isinstance(
                 element, InteractiveComponent
             ):
+                # print("Interactive Component found:", element)
                 element_temp = element()
                 element_temp.obj = element
                 element = element_temp
+
+                element.obj.model.register_component(element.obj)
             if issubclass(element.__class__, Component):
                 element = element()
 
