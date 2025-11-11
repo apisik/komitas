@@ -8,6 +8,7 @@ from komitas.html.attributes import (
     ScriptAttribute,
     HxAttribute,
     AriaLabel,
+    ButtonAttribute,
 )
 
 from typing import Union
@@ -193,6 +194,10 @@ class Div(Tag):
 
 
 class Button(Tag):
+    attribute_extensions = [
+        ButtonAttribute,
+    ]
+
     def __init__(self, text: str = ""):
         super().__init__()
         self.text = text
@@ -251,4 +256,8 @@ class Svg(Tag):
 
 
 class Use(Tag):
+    pass
+
+
+class Nav(Tag):
     pass

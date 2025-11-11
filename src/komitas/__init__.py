@@ -15,16 +15,16 @@ app = Starlette()
 
 @app.route("/")
 def index(request: Request) -> str:
-    for k, v in request.headers.items():
-        if k.lower().startswith("hx-"):
-            print(f"{k}: {v}")
+    # for k, v in request.headers.items():
+    #     if k.lower().startswith("hx-"):
+    #         print(f"{k}: {v}")
 
     return Response(DemoSinglePageApp().render(request), media_type="text/html")
 
 
 def run() -> None:
     subprocess.Popen(
-        ["uvicorn", "komitas:app", "--reload"],
+        ["uvicorn", "--host", "0.0.0.0", "komitas:app", "--reload"],
         # stdout=subprocess.PIPE,
         # stderr=subprocess.PIPE,
     )

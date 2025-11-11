@@ -103,3 +103,57 @@ class ViewContainer(InteractiveComponent):
             )
             .innrs(self.model.active_view)
         )
+
+
+class CollapsibleNavbar(Component):
+    """
+    Renders a Bootstrap collapsible navbar similar to the provided HTML.
+    Use with a NavbarModel (or pass a model with .active_view if you need dynamic behaviour).
+    """
+
+    def __init__(self, model: NavbarModel):
+        self.model = model
+        self.brand_text = self.model.LogoText
+
+    def update_state(self, params):
+        if "active_view" in params:
+            self.model.active_view = params["active_view"]
+
+    def __call__(self):
+        return (
+            Nav()
+            .attrs((Class, "navbar navbar-expand-lg bg-body-tertiary"))
+            .innrs(
+                Div()
+                .attrs((Class, "container"))
+                .innrs(
+                    A(self.brand_text).attrs((Class, "navbar-brand")),
+                    Button()
+                    .attrs(
+                        (Class, "navbar-toggler"),
+                        (Type, "button"),
+                        (Data_Bs_Toggle, "collapse"),
+                        (Data_Bs_Target, "#navbarSupportedContent"),
+                        (Aria_Controls, "navbarSupportedContent"),
+                        (Aria_Expanded, "false"),
+                        (Aria_Label, "Toggle navigation"),
+                    )
+                    .innrs(Span().attrs((Class, "navbar-toggler-icon"))),
+                    Div()
+                    .attrs(
+                        (Class, "collapse navbar-collapse"),
+                        (Id, "navbarSupportedContent"),
+                    )
+                    .innrs(
+                        Ul()
+                        .attrs((Class, "navbar-nav me-auto mb-2 mb-lg-0"))
+                        .innrs(
+                            *[
+                                NavbarButton(self.model, view)
+                                for view in self.model.views
+                            ]
+                        ),
+                    ),
+                ),
+            )
+        )

@@ -24,7 +24,7 @@ class DemoSinglePageApp(SinglePageApp):
             views=self.views,
             active_view=self.views[0],
         )
-        self.AppBar = Navbar(self.navbar_model)
+        self.AppBar = CollapsibleNavbar(self.navbar_model)
 
         self.html = None
         self.ActiveView = None

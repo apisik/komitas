@@ -25,6 +25,14 @@ class Id(GlobalAttribute):
     pass
 
 
+class Data_Bs_Toggle(GlobalAttribute):
+    pass
+
+
+class Data_Bs_Target(GlobalAttribute):
+    pass
+
+
 # HTML Attributes
 class HTMLAttribute(Attribute):
     pass
@@ -102,6 +110,26 @@ class Aria_Current(AriaLabel):
     pass
 
 
+class Aria_Disabled(AriaLabel):
+    pass
+
+
+class Aria_Controls(AriaLabel):
+    pass
+
+
+class Aria_Expanded(AriaLabel):
+    pass
+
+
+class Aria_Label(AriaLabel):
+    pass
+
+
+class Role(AriaLabel):
+    pass
+
+
 class Width(GlobalAttribute):
     pass
 
@@ -136,4 +164,13 @@ class Hx_Target(HxAttribute):
 
 
 class Hx_Swap_Oob(HxAttribute):
+    pass
+
+
+# button Attributes
+class ButtonAttribute(Attribute):
+    pass
+
+
+class Type(ButtonAttribute):
     pass
