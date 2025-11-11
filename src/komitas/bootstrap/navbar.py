@@ -149,7 +149,7 @@ class CollapsibleNavbar(Component):
                                 (Class, "ms-auto"),
                             ),
                         Ul()
-                        .attrs((Class, "navbar-nav0000 mb-2 mb-lg-0"))
+                        .attrs((Class, "navbar-nav mb-2 mb-lg-0"))
                         .innrs(
                             *[
                                 NavbarButton(self.model, view)

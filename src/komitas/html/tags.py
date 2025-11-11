@@ -1,14 +1,10 @@
 from xml.etree.ElementTree import Element
 from komitas.html.attributes import (
-    GlobalAttribute,
     Attribute,
-    HTMLAttribute,
-    MetaAttribute,
-    LinkAttribute,
-    ScriptAttribute,
+    GlobalAttribute,
     HxAttribute,
-    AriaLabel,
-    ButtonAttribute,
+    AriaAttribute,
+    get_tag_attribute_mixins,
 )
 
 from typing import Union
@@ -25,13 +21,15 @@ class Tag(Element):
     allowed_attributes = [
         GlobalAttribute,
         HxAttribute,
-        AriaLabel,
+        AriaAttribute,
     ]
 
     attribute_extensions = []
 
     def __init_subclass__(cls):
+        cls.allowed_attributes = list(cls.allowed_attributes)
         cls.__extend_attributes()
+        cls.__extend_tag_specific_attributes()
         return super().__init_subclass__()
 
     def __init__(self, text: str = None):
@@ -47,6 +45,12 @@ class Tag(Element):
     def __extend_attributes(cls):
         for extension in cls.attribute_extensions:
             cls.allowed_attributes.append(extension)
+
+    @classmethod
+    def __extend_tag_specific_attributes(cls):
+        for mixin in get_tag_attribute_mixins(cls.__name__.lower()):
+            if mixin not in cls.allowed_attributes:
+                cls.allowed_attributes.append(mixin)
 
     def attrs(self, *attributes: tuple[Attribute, str]):
         for attribute, value in attributes:
@@ -108,13 +112,8 @@ class Tag(Element):
         return self
 
 
-# Main Root
-
-
 class HTML(Tag):
-    attribute_extensions = [
-        HTMLAttribute,
-    ]
+    pass
 
 
 class Head(Tag):
@@ -126,6 +125,20 @@ class Title(Tag):
         super().__init__()
         self.text = text
 
+
+class Base(Tag):
+    pass
+
+
+class Link(Tag):
+    pass
+
+
+class Meta(Tag):
+    pass
+
+
+class Style(Tag):
     pass
 
 
@@ -133,38 +146,44 @@ class Body(Tag):
     pass
 
 
-class P(Tag):
+# Sectioning content
+class Address(Tag):
     pass
 
 
-class A(Tag):
+class Article(Tag):
     pass
 
 
-class Meta(Tag):
-    attribute_extensions = [
-        MetaAttribute,
-    ]
+class Aside(Tag):
     pass
 
 
-class Link(Tag):
-    attribute_extensions = [
-        LinkAttribute,
-    ]
+class Footer(Tag):
     pass
 
 
-class Script(Tag):
-    attribute_extensions = [
-        ScriptAttribute,
-    ]
-
-    def __init__(self, text: str = ""):
-        super().__init__()
-        self.text = text
+class Header(Tag):
+    pass
 
 
+class Hgroup(Tag):
+    pass
+
+
+class Main(Tag):
+    pass
+
+
+class Nav(Tag):
+    pass
+
+
+class Section(Tag):
+    pass
+
+
+# Text content
 class H1(Tag):
     pass
 
@@ -189,18 +208,12 @@ class H6(Tag):
     pass
 
 
-class Div(Tag):
+class P(Tag):
     pass
 
 
-class Button(Tag):
-    attribute_extensions = [
-        ButtonAttribute,
-    ]
-
-    def __init__(self, text: str = ""):
-        super().__init__()
-        self.text = text
+class Blockquote(Tag):
+    pass
 
 
 class Pre(Tag):
@@ -209,37 +222,7 @@ class Pre(Tag):
         self.text = text
 
 
-class Code(Tag):
-    def __init__(self, text: str = ""):
-        super().__init__()
-        self.text = text
-
-
-class Strong(Tag):
-    pass
-
-
-class Span(Tag):
-    pass
-
-
-class DD(Tag):
-    pass
-
-
-class DL(Tag):
-    pass
-
-
-class DT(Tag):
-    pass
-
-
-class Hr(Tag):
-    pass
-
-
-class Header(Tag):
+class Ol(Tag):
     pass
 
 
@@ -251,6 +234,198 @@ class Li(Tag):
     pass
 
 
+class Dl(Tag):
+    pass
+
+
+class Dt(Tag):
+    pass
+
+
+class Dd(Tag):
+    pass
+
+
+class Figure(Tag):
+    pass
+
+
+class Figcaption(Tag):
+    pass
+
+
+class Hr(Tag):
+    pass
+
+
+class Div(Tag):
+    pass
+
+
+# Inline text semantics
+class A(Tag):
+    pass
+
+
+class Abbr(Tag):
+    pass
+
+
+class B(Tag):
+    pass
+
+
+class Bdi(Tag):
+    pass
+
+
+class Bdo(Tag):
+    pass
+
+
+class Br(Tag):
+    pass
+
+
+class Cite(Tag):
+    pass
+
+
+class Code(Tag):
+    def __init__(self, text: str = ""):
+        super().__init__()
+        self.text = text
+
+
+class Data(Tag):
+    pass
+
+
+class Dfn(Tag):
+    pass
+
+
+class Em(Tag):
+    pass
+
+
+class I(Tag):
+    pass
+
+
+class Kbd(Tag):
+    pass
+
+
+class Mark(Tag):
+    pass
+
+
+class Q(Tag):
+    pass
+
+
+class Rp(Tag):
+    pass
+
+
+class Rt(Tag):
+    pass
+
+
+class Ruby(Tag):
+    pass
+
+
+class S(Tag):
+    pass
+
+
+class Samp(Tag):
+    pass
+
+
+class Small(Tag):
+    pass
+
+
+class Span(Tag):
+    pass
+
+
+class Strong(Tag):
+    pass
+
+
+class Sub(Tag):
+    pass
+
+
+class Sup(Tag):
+    pass
+
+
+class Time(Tag):
+    pass
+
+
+class U(Tag):
+    pass
+
+
+class Var(Tag):
+    pass
+
+
+class Wbr(Tag):
+    pass
+
+
+class Del(Tag):
+    pass
+
+
+class Ins(Tag):
+    pass
+
+
+# Media elements
+class Area(Tag):
+    pass
+
+
+class Audio(Tag):
+    pass
+
+
+class Img(Tag):
+    pass
+
+
+class Map(Tag):
+    pass
+
+
+class Track(Tag):
+    pass
+
+
+class Video(Tag):
+    pass
+
+
+class Picture(Tag):
+    pass
+
+
+class Source(Tag):
+    pass
+
+
+class Canvas(Tag):
+    pass
+
+
 class Svg(Tag):
     pass
 
@@ -259,5 +434,161 @@ class Use(Tag):
     pass
 
 
-class Nav(Tag):
+# Embedded content
+class Embed(Tag):
+    pass
+
+
+class Iframe(Tag):
+    pass
+
+
+class Object(Tag):
+    pass
+
+
+class Param(Tag):
+    pass
+
+
+class Portal(Tag):
+    pass
+
+
+class Math(Tag):
+    pass
+
+
+# Scripting
+class Script(Tag):
+    def __init__(self, text: str = ""):
+        super().__init__()
+        self.text = text
+
+
+class Noscript(Tag):
+    pass
+
+
+class Template(Tag):
+    pass
+
+
+class Slot(Tag):
+    pass
+
+
+# Table content
+class Table(Tag):
+    pass
+
+
+class Caption(Tag):
+    pass
+
+
+class Colgroup(Tag):
+    pass
+
+
+class Col(Tag):
+    pass
+
+
+class Tbody(Tag):
+    pass
+
+
+class Thead(Tag):
+    pass
+
+
+class Tfoot(Tag):
+    pass
+
+
+class Tr(Tag):
+    pass
+
+
+class Td(Tag):
+    pass
+
+
+class Th(Tag):
+    pass
+
+
+# Forms
+class Form(Tag):
+    pass
+
+
+class Label(Tag):
+    pass
+
+
+class Input(Tag):
+    pass
+
+
+class Button(Tag):
+    def __init__(self, text: str = ""):
+        super().__init__()
+        self.text = text
+
+
+class Select(Tag):
+    pass
+
+
+class Datalist(Tag):
+    pass
+
+
+class Optgroup(Tag):
+    pass
+
+
+class Option(Tag):
+    pass
+
+
+class Textarea(Tag):
+    pass
+
+
+class Output(Tag):
+    pass
+
+
+class Progress(Tag):
+    pass
+
+
+class Meter(Tag):
+    pass
+
+
+class Fieldset(Tag):
+    pass
+
+
+class Legend(Tag):
+    pass
+
+
+class Details(Tag):
+    pass
+
+
+class Summary(Tag):
+    pass
+
+
+class Dialog(Tag):
+    pass
+
+
+class Menu(Tag):
     pass
