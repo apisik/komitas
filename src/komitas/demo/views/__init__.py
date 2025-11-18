@@ -1,7 +1,7 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.bootstrap.base import *
-
+from komitas.application.component import *
 from types import NoneType
 from typing import Union
 
@@ -82,3 +82,6 @@ class KomitasDemoHTMLBase(Component):
                 ),
             )
         )
+
+
+__all__ = ["KomitasDemoHTMLBase"]

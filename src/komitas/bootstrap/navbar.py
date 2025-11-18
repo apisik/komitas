@@ -1,17 +1,17 @@
-from komitas.application.component import ComponentModel, InteractiveComponent
-from komitas.application.component import View
+from komitas.application.component import ComponentModel, InteractiveComponent, View
+from komitas.application.component import *
 from komitas.html.tags import *
 from komitas.html.attributes import *
 
 
-class NavbarModel(ComponentModel):
-    views: list[InteractiveComponent]
-    active_view: InteractiveComponent
+class BootstrapNavbarModel(AppBarModel):
+    views: list[View]
+    active_view: View
     LogoText: str
 
 
-class NavbarButton(InteractiveComponent):
-    def __init__(self, model: NavbarModel, view: InteractiveComponent):
+class BootsrapNavbarButton(InteractiveComponent):
+    def __init__(self, model: BootstrapNavbarModel, view: View):
         self.model = model
         self.view = view
 
@@ -25,11 +25,11 @@ class NavbarButton(InteractiveComponent):
                 (Class, "nav-item"),
                 (Hx_Get, ""),
                 (Hx_Swap, "outerHTML"),
-                (Hx_Target, f"#{self.view.label.lower()}-nav-link"),
-                (Id, f"{self.view.label.lower()}-nav-link"),
+                (Hx_Target, f"#{self.view.name_safe()}-nav-link"),
+                (Id, f"{self.view.name_safe()}-nav-link"),
             )
             .innrs(
-                A(self.view.label).attrs(
+                A(self.view.name()).attrs(
                     (Href, "#"),
                     (
                         Class,
@@ -43,75 +43,13 @@ class NavbarButton(InteractiveComponent):
         )
 
 
-class Navbar(Component):
-    def __init__(self, model: NavbarModel):
-        self.model = model
-
-    def update_state(self, params):
-        if "active_view" in params:
-            self.model.active_view = params["active_view"]
-
-    def __call__(self):
-        return (
-            Div()
-            .attrs(
-                (Class, "container"),
-            )
-            .innrs(
-                Header()
-                .attrs(
-                    (
-                        Class,
-                        "d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom",
-                    )
-                )
-                .innrs(
-                    A()
-                    .attrs(
-                        (Href, "/"),
-                        (
-                            Class,
-                            "d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none",
-                        ),
-                    )
-                    .innrs(
-                        Span(self.model.LogoText).attrs((Class, "fs-4")),
-                    ),
-                    Ul()
-                    .attrs((Class, "nav nav-pills"))
-                    .innrs(
-                        *[NavbarButton(self.model, view) for view in self.model.views]
-                    ),
-                ),
-            )
-        )
-
-
-class ViewContainer(InteractiveComponent):
-    def __init__(self, model: NavbarModel):
-        self.model = model
-
-    def update_state(self, params):
-        pass
-
-    def __call__(self):
-        return (
-            Div()
-            .attrs(
-                (Id, "view-container"),
-                (Class, "container mt-4"),
-            )
-            .innrs(self.model.active_view)
-        )
-
-
 class CollapsibleNavbar(Component):
     """
     Renders a Bootstrap collapsible navbar similar to the provided HTML.
     Use with a NavbarModel (or pass a model with .active_view if you need dynamic behaviour).
     """
 
-    def __init__(self, model: NavbarModel):
+    def __init__(self, model: BootstrapNavbarModel):
         self.model = model
         self.brand_text = self.model.LogoText
 
@@ -145,16 +83,16 @@ class CollapsibleNavbar(Component):
                         (Id, "navbarSupportedContent"),
                     )
                     .innrs(
-                        Div().attrs(
-                            (Class, "ms-auto"),
-                        ),
                         Ul()
                         .attrs((Class, "navbar-nav mb-2 mb-lg-0"))
                         .innrs(
                             *[
-                                NavbarButton(self.model, view)
+                                BootsrapNavbarButton(self.model, view)
                                 for view in self.model.views
                             ]
+                        ),
+                        Div().attrs(
+                            (Class, "me-auto"),
                         ),
                     ),
                 ),

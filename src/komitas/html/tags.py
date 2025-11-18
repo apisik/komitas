@@ -7,9 +7,10 @@ from komitas.html.attributes import (
     get_tag_attribute_mixins,
 )
 
-from typing import Union
+from typing import Union, TYPE_CHECKING
 from types import NoneType
-from komitas.application.component import Component, InteractiveComponent
+
+import komitas.application.component as cmp
 
 
 class Tag(Element):
@@ -32,10 +33,10 @@ class Tag(Element):
         cls.__extend_tag_specific_attributes()
         return super().__init_subclass__()
 
-    def __init__(self, text: str = None):
+    def __init__(self, text: Union[str, "Tag"] = ""):
         super().__init__(self.__class__.__name__.lower())
         self.elements: list[Tag] = []
-        self.interactive_components: dict[str, InteractiveComponent] = {}
+        self.interactive_components: dict[str, cmp.InteractiveComponent] = {}
         if text is not None and isinstance(text, str):
             self.text = text
         elif text is not None and isinstance(text, Tag):
@@ -52,7 +53,7 @@ class Tag(Element):
             if mixin not in cls.allowed_attributes:
                 cls.allowed_attributes.append(mixin)
 
-    def attrs(self, *attributes: tuple[Attribute, str]):
+    def attrs(self, *attributes: tuple[type[Attribute], str]):
         for attribute, value in attributes:
             if not issubclass(attribute, tuple(self.allowed_attributes)):
                 raise TypeError(
@@ -61,7 +62,9 @@ class Tag(Element):
             attribute(self, value)
         return self
 
-    def innrs(self, *elements: Union[str, Component, InteractiveComponent, "Tag"]):
+    def innrs(
+        self, *elements: Union[str, cmp.Component, cmp.InteractiveComponent, "Tag"]
+    ):
         for element in elements:
             self.elements.append(element)
         return self
@@ -91,8 +94,8 @@ class Tag(Element):
 
                 continue
 
-            if issubclass(element.__class__, InteractiveComponent) and isinstance(
-                element, InteractiveComponent
+            if issubclass(element.__class__, cmp.InteractiveComponent) and isinstance(
+                element, cmp.InteractiveComponent
             ):
                 # print("Interactive Component found:", element)
                 element_temp = element()
@@ -100,7 +103,7 @@ class Tag(Element):
                 element = element_temp
 
                 element.obj.model.register_component(element.obj)
-            if issubclass(element.__class__, Component):
+            if issubclass(element.__class__, cmp.Component):
                 element = element()
 
             if not isinstance(element, Element):

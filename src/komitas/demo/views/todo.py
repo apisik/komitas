@@ -1,13 +1,13 @@
 from komitas.html.attributes import *
 from komitas.html.tags import *
-from komitas.application.component import ComponentModel, InteractiveComponent
+from komitas.application.component import View, ViewModel
 
 
-class TodoModel(ComponentModel):
-    pass
+class TodoModel(ViewModel):
+    name: str = "To Do"
 
 
-class TodoView(InteractiveComponent):
+class TodoView(View):
     def __init__(self, model: TodoModel):
         self.model = model
         self.label = "Todo"

@@ -1,13 +1,13 @@
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.demo.components import *
+from komitas.demo.views import *
 from komitas.bootstrap.navbar import *
 from komitas.application.spa import SinglePageApp
 from xml.etree import ElementTree as ET
 
 from komitas.html.tags import *
 from komitas.html.attributes import *
-from komitas.demo.views.home import HomeView, HomeModel
+from komitas.demo.views.home import HomeView, HomeViewModel
 from komitas.demo.views.todo import TodoView, TodoModel
 
 
@@ -15,12 +15,13 @@ class DemoSinglePageApp(SinglePageApp):
     def __init__(self):
         self.base_html = KomitasDemoHTMLBase
         self.views = [
-            HomeView(HomeModel()),
+            HomeView(HomeViewModel()),
             TodoView(TodoModel()),
         ]
 
-        self.navbar_model = NavbarModel(
-            LogoText="Komitas Demo Application",
+        self.navbar_model = BootstrapNavbarModel(
+            name="navbar",
+            LogoText="Komitas Demo!",
             views=self.views,
             active_view=self.views[0],
         )
@@ -31,10 +32,12 @@ class DemoSinglePageApp(SinglePageApp):
 
         # self.build()
         # self.html.build()
+        super().__init__()
 
     def build(self):
         self.html = KomitasDemoHTMLBase(
-            innrs=[Div().innrs(self.AppBar, ViewContainer(self.navbar_model))]
+            title="Komitas Demo Application",
+            innrs=[self.AppBar, ViewContainer(self.navbar_model)],
         )()
 
     def index(self) -> str:

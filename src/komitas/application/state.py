@@ -1,6 +1,5 @@
-class State:
-    pass
+from sqlmodel import SQLModel
 
 
-class SinglePageAppState(State):
+class State(SQLModel):
     pass

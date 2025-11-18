@@ -1,18 +1,14 @@
 from komitas.html.attributes import *
 from komitas.html.tags import *
-from komitas.application.component import ComponentModel, InteractiveComponent
+from komitas.application.component import ComponentModel, View, ViewModel
 
 
-class HomeModel(ComponentModel):
-    pass
+class HomeViewModel(ViewModel):
+    name: str = "Home"
 
 
-class HomeView(InteractiveComponent):
-    def __init__(self, model: HomeModel):
-        self.model = model
-        self.label = "Home"
-
-    def __call__(self):
+class HomeView(View):
+    def tag(self) -> Tag:
         return Div().innrs(
             H2("Home View"),
             P().innrs(

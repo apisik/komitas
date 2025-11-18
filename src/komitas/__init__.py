@@ -7,10 +7,15 @@ import subprocess
 from starlette.applications import Starlette
 from starlette.responses import Response
 from starlette.requests import Request
+from starlette.middleware.sessions import SessionMiddleware
 from livereload import Server
 import threading
+import secrets
 
-app = Starlette()
+app = Starlette(
+    debug=True,
+)
+app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32), max_age=3600, same_site="lax", https_only=False)
 
 
 @app.route("/")
@@ -18,6 +23,10 @@ def index(request: Request) -> str:
     # for k, v in request.headers.items():
     #     if k.lower().startswith("hx-"):
     #         print(f"{k}: {v}")
+
+    # print all cookies
+    for k, v in request.cookies.items():
+        print(f"Cookie: {k}={v}")
 
     return Response(DemoSinglePageApp().render(request), media_type="text/html")
 

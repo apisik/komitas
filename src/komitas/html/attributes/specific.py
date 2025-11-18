@@ -133,6 +133,7 @@ __all__ = [
     "Muted",
     "Name",
     "Novalidate",
+    "OnClick",
     "Open",
     "Optimum",
     "Pattern",
@@ -765,6 +766,9 @@ class Name(
 
 class Novalidate(FormAttribute):
     attribute_name = "novalidate"
+
+class OnClick(ButtonAttribute):
+    attribute_name = "onclick"
 
 
 class Open(DetailsAttribute, DialogAttribute):
