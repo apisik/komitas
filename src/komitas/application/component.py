@@ -40,7 +40,7 @@ class InteractiveComponent(Component, Generic[TComponentModel]):
     We subclass component and add the funcitonality for updating state.
     """
 
-    def __init__(self, model: TComponentModel):
+    def __init__(self, model: TComponentModel) -> None:
         self.model: TComponentModel = model
 
     def update_state(self, params):
@@ -54,10 +54,10 @@ class InteractiveComponent(Component, Generic[TComponentModel]):
 
 
 class ViewModel(ComponentModel):
-    pass
+    name: str
 
 
-class View(InteractiveComponent):
+class View(InteractiveComponent[ViewModel]):
     pass
 
 
@@ -65,14 +65,11 @@ class AppBarModel(ComponentModel):
     active_view: View
 
 
-class AppBar(InteractiveComponent):
+class AppBar(InteractiveComponent[AppBarModel]):
     pass
 
 
-class ViewContainer(InteractiveComponent):
-    def __init__(self, model: AppBarModel):
-        self.model: AppBarModel = model
-
+class ViewContainer(InteractiveComponent[AppBarModel]):
     def update_state(self, params):
         pass
 
