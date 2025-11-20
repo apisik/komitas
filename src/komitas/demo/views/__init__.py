@@ -2,16 +2,12 @@ from komitas.html.tags import *
 from komitas.html.attributes import *
 from komitas.bootstrap.base import *
 from komitas.application.component import *
-from types import NoneType
-from typing import Union
 
 
-class KomitasDemoHTMLBase(Component):
-    def __init__(self, title: str = "Komitas Demo", innrs: Union[Tag, NoneType] = None):
-        self.title = title
-        self.innrs = innrs
+class KomitasDemoPageBase(PageBase):
+    title = "Komitas Demo!"
 
-    def __call__(self, *args, **kwds):
+    def tag(self):
         return (
             HTML()
             .attrs(
@@ -84,4 +80,4 @@ class KomitasDemoHTMLBase(Component):
         )
 
 
-__all__ = ["KomitasDemoHTMLBase"]
+__all__ = ["KomitasDemoPageBase"]

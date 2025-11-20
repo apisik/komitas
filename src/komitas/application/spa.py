@@ -9,8 +9,10 @@ A single page app consists of a number of components:
 """
 
 from komitas.application.state import State
-
+from komitas.application.component import Component
 import inspect
+import xml.etree.ElementTree as ET
+from komitas.html.tags import Tag
 
 
 class SinglePageAppState(State):
@@ -18,29 +20,24 @@ class SinglePageAppState(State):
 
 
 class SinglePageApp:
-    def __init__(self):
-        print(self.get_class_file())
+    base_html: Component
 
     def render(self, request) -> str:
-        # print session id
-        session_id = request.session.get("count", 0)
-        session_id += 1
-        request.session["count"] = session_id
-        print(f"Session ID: {session_id}")
         # check if hx-request header is present
         if "HX-Request" in request.headers:
             query_params = request.query_params
-            return self.index_partial(request.headers["HX-Trigger"], query_params)
+            r = self.index_partial(query_params)
         else:
-            return self.index()
+            r = self.index()
 
-    def index(self) -> str:
-        raise NotImplementedError
+        return ET.tostring(r, encoding="unicode", short_empty_elements=False)
 
-    def index_partial(self, target) -> str:
+    def index(self) -> Tag:
+        return self.base_html.tag().build()
+
+    def index_partial(self, target) -> Tag:
         raise NotImplementedError
 
     @classmethod
     def get_class_file(cls) -> str:
         return inspect.getfile(cls)
-

@@ -5,8 +5,6 @@ from komitas.html.attributes import *
 
 
 class BootstrapNavbarModel(AppBarModel):
-    views: list[View]
-    active_view: View
     LogoText: str
 
 

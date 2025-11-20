@@ -1,9 +1,10 @@
 from sqlmodel import SQLModel
 from pydantic import GetCoreSchemaHandler
 from pydantic_core import core_schema
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Union
 import komitas.html.tags as tg
 import komitas.html.attributes as at
+from types import NoneType
 
 
 class Component:
@@ -22,6 +23,14 @@ class Component:
         cls, source, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
         return core_schema.is_instance_schema(cls)
+
+
+class PageBase(Component):
+    title: str = "Base Page Title"
+    innrs: list[Union[Component, tg.Tag]] = []
+
+    def tag(self) -> tg.Tag:
+        return tg.Div(tg.H1(self.title), *self.innrs)
 
 
 class ComponentModel(SQLModel):
@@ -63,6 +72,7 @@ class View(InteractiveComponent[ViewModel]):
 
 class AppBarModel(ComponentModel):
     active_view: View
+    views: list[View]
 
 
 class AppBar(InteractiveComponent[AppBarModel]):
@@ -78,7 +88,6 @@ class ViewContainer(InteractiveComponent[AppBarModel]):
             tg.Div()
             .attrs(
                 (at.Id, "view-container"),
-                (at.Class, "container mt-4"),
             )
             .innrs(self.model.active_view)
         )

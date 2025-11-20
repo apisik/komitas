@@ -13,4 +13,8 @@ class TodoView(View):
         self.label = "Todo"
 
     def __call__(self):
-        return Div().innrs(H2("Todo View"), P("This is a simple Todo view."))
+        return (
+            Div()
+            .attrs((Class, "container mt-4"))
+            .innrs(H2("Todo View"), P("This is a simple Todo view."))
+        )

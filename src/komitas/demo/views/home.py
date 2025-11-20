@@ -9,16 +9,20 @@ class HomeViewModel(ViewModel):
 
 class HomeView(View):
     def tag(self) -> Tag:
-        return Div().innrs(
-            H2("Home View"),
-            P().innrs(
-                """
+        return (
+            Div()
+            .attrs((Class, "container mt-4"))
+            .innrs(
+                H2("Home View"),
+                P().innrs(
+                    """
                 Welcome to the Home view of the Komitas demo application.
                 This is a simple demonstration of a single-page application using Komitas.
                 """,
-            ),
-            P().innrs(
-                "Made with ❤️ by ",
-                A("Avo Pisikyan").attrs((Href, "https://avop.me")),
-            ),
+                ),
+                P().innrs(
+                    "Made with ❤️ by ",
+                    A("Avo Pisikyan").attrs((Href, "https://avop.me")),
+                ),
+            )
         )
