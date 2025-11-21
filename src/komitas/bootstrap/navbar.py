@@ -41,15 +41,11 @@ class BootsrapNavbarButton(InteractiveComponent):
         )
 
 
-class CollapsibleNavbar(Component):
+class CollapsibleNavbar(AppBar):
     """
     Renders a Bootstrap collapsible navbar similar to the provided HTML.
     Use with a NavbarModel (or pass a model with .active_view if you need dynamic behaviour).
     """
-
-    def __init__(self, model: BootstrapNavbarModel):
-        self.model = model
-        self.brand_text = self.model.LogoText
 
     def update_state(self, params):
         if "active_view" in params:
@@ -63,7 +59,7 @@ class CollapsibleNavbar(Component):
                 Div()
                 .attrs((Class, "container"))
                 .innrs(
-                    A(self.brand_text).attrs((Class, "navbar-brand")),
+                    A(self.model.LogoText).attrs((Class, "navbar-brand")),
                     Button()
                     .attrs(
                         (Class, "navbar-toggler"),

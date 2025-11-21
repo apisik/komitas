@@ -7,7 +7,7 @@ from komitas.html.attributes import (
     get_tag_attribute_mixins,
 )
 
-from typing import Union, TYPE_CHECKING
+from typing import Union
 from types import NoneType
 
 import komitas.application.component as cmp
@@ -35,7 +35,9 @@ class Tag(Element):
 
     def __init__(self, text: Union[str, "Tag"] = ""):
         super().__init__(self.__class__.__name__.lower())
-        self.elements: list[Tag] = []
+        self.elements: list[
+            Union[str, cmp.Component, cmp.InteractiveComponent, "Tag"]
+        ] = []
         self.interactive_components: dict[str, cmp.InteractiveComponent] = {}
         if text is not None and isinstance(text, str):
             self.text = text
@@ -63,7 +65,8 @@ class Tag(Element):
         return self
 
     def innrs(
-        self, *elements: Union[str, cmp.Component, cmp.InteractiveComponent, "Tag"]
+        self,
+        *elements: Union[str, cmp.Component, cmp.InteractiveComponent, "Tag"],
     ):
         for element in elements:
             self.elements.append(element)
@@ -71,7 +74,9 @@ class Tag(Element):
 
     def build(self):
         first_element = True
-        last_element: Union[NoneType, Tag] = None
+        last_element: Union[NoneType, Tag, cmp.Component, cmp.InteractiveComponent] = (
+            None
+        )
         for element in self.elements:
             if not isinstance(element, str):
                 last_element = element

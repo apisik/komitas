@@ -7,10 +7,24 @@ import komitas.html.attributes as at
 from types import NoneType
 
 
-class Component:
+class ComponentModel(SQLModel):
+    registered_components: list["Component"] = []
+    name: str
+
+    def register_component(self, component: "Component"):
+        self.registered_components.append(component)
+
+
+TComponentModel = TypeVar("TComponentModel", bound=ComponentModel)
+
+
+class Component(Generic[TComponentModel]):
     """
     This is the base class that we extend from to define components.
     """
+
+    def __init__(self, model: TComponentModel) -> None:
+        self.model: TComponentModel = model
 
     def __call__(self) -> tg.Tag:
         return self.tag()
@@ -25,23 +39,20 @@ class Component:
         return core_schema.is_instance_schema(cls)
 
 
-class PageBase(Component):
+class PageBaseModel(ComponentModel):
+    pass
+
+
+class PageBase(Component[PageBaseModel]):
     title: str = "Base Page Title"
     innrs: list[Union[Component, tg.Tag]] = []
 
+    def __init__(self, *args) -> None:
+        self.nav_bar: Union["AppBar", tg.Tag] = tg.Div()
+        super().__init__(*args)
+
     def tag(self) -> tg.Tag:
         return tg.Div(tg.H1(self.title), *self.innrs)
-
-
-class ComponentModel(SQLModel):
-    registered_components: list[Component] = []
-    name: str
-
-    def register_component(self, component: Component):
-        self.registered_components.append(component)
-
-
-TComponentModel = TypeVar("TComponentModel", bound=ComponentModel)
 
 
 class InteractiveComponent(Component, Generic[TComponentModel]):
@@ -71,12 +82,15 @@ class View(InteractiveComponent[ViewModel]):
 
 
 class AppBarModel(ComponentModel):
-    active_view: View
-    views: list[View]
+    active_view: Union[View, NoneType] = None
+    views: set[View] = set()
 
 
 class AppBar(InteractiveComponent[AppBarModel]):
-    pass
+    def register_views(self, *args: View):
+        if not self.model.active_view:
+            self.model.active_view = args[0]
+        self.model.views.update(args)
 
 
 class ViewContainer(InteractiveComponent[AppBarModel]):

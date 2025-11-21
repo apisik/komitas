@@ -4,6 +4,10 @@ from komitas.bootstrap.base import *
 from komitas.application.component import *
 
 
+class KomitasDemoPageBaseModel(PageBaseModel):
+    pass
+
+
 class KomitasDemoPageBase(PageBase):
     title = "Komitas Demo!"
 
@@ -62,6 +66,7 @@ class KomitasDemoPageBase(PageBase):
                 Body()
                 .attrs((Data_Bs_Theme, "dark"))
                 .innrs(
+                    self.nav_bar,
                     *self.innrs,
                     Script().attrs(
                         (
