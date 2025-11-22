@@ -45,9 +45,19 @@ class SinglePageApp:
     def index(self) -> Tag:
         return self.base_html.tag().build()
 
-    def index_partial(self, trigger_id, query_parameters) -> Tag:
+    def index_partial(self, trigger_id, query_parameters) -> str:
         html = self.base_html.tag().build()
         target = html.find(f".//*[@id='{trigger_id}']")
+
+        if target is None:
+            raise ValueError("Target should not be None!")
+        if target.obj is None:
+            raise ValueError("Target.obj should not be None!")
+        #
+        # from xml.etree.ElementTree import Element
+        #
+        # if isinstance(target, Element):
+        #     raise TypeError("Target should be of type Element")
 
         target.obj.update_state(query_parameters)
 

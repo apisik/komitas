@@ -13,7 +13,18 @@ from types import NoneType
 import komitas.application.component as cmp
 
 
-class Tag(Element):
+class ObjReferencingElement(Element):
+    def __init__(self, *args, **kwargs) -> None:
+        self.obj: Union[cmp.InteractiveComponent, NoneType] = None
+        super().__init__(*args, **kwargs)
+
+    def find(
+        self, path: str, namespaces: dict[str, str] | None = None
+    ) -> "ObjReferencingElement | None":
+        return super().find(path, namespaces)  # type: ignore
+
+
+class Tag(ObjReferencingElement):
     """
     The `Tag` element serves as the base class for all HTML tags in
     this framework.
@@ -90,6 +101,7 @@ class Tag(Element):
                 not first_element
                 and isinstance(element, str)
                 and last_element is not None
+                and isinstance(last_element, "Tag")
             ):
                 last_element.tail = (
                     element
@@ -102,13 +114,16 @@ class Tag(Element):
             if issubclass(element.__class__, cmp.InteractiveComponent) and isinstance(
                 element, cmp.InteractiveComponent
             ):
-                # print("Interactive Component found:", element)
                 element_temp = element()
                 element_temp.obj = element
                 element = element_temp
-
-                element.obj.model.register_component(element.obj)
-            if issubclass(element.__class__, cmp.Component):
+                if element.obj is not None:
+                    element.obj.model.register_component(element.obj)
+            if (
+                issubclass(element.__class__, cmp.Component)
+                and not isinstance(element, str)
+                and not isinstance(element, "Tag")
+            ):
                 element = element()
 
             if not isinstance(element, Element):
@@ -317,7 +332,7 @@ class Em(Tag):
     pass
 
 
-class I(Tag):
+class I(Tag):  # noqa: E742
     pass
 
 
