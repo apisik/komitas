@@ -1,85 +1,65 @@
-from komitas.html.tags import *
-from komitas.html.attributes import *
-from komitas.bootstrap.base import *
-from komitas.application.component import *
+from komitas.application.base_component import ComponentModel
+from komitas.bootstrap import navbar
+import komitas.html.tags as tg
+import komitas.html.attributes as at
+import komitas.application.component as cmp
 
 
-class KomitasDemoPageBaseModel(PageBaseModel):
+class KomitasDemoPageBaseModel(ComponentModel):
     pass
 
 
-class KomitasDemoPageBase(PageBase):
-    title = "Komitas Demo!"
-
+class KomitasDemoPageBase(cmp.PageBase[KomitasDemoPageBaseModel]):
     def tag(self):
         return (
-            HTML()
+            tg.HTML()
             .attrs(
-                (Lang, "en"),
+                (at.Lang, "en"),
             )
             .innrs(
-                Head().innrs(
-                    Meta().attrs((Charset, "UTF-8")),
-                    Meta().attrs(
-                        (Name, "viewport"),
-                        (Content, "width=device-width, initial-scale=1.0"),
+                tg.Head().innrs(
+                    tg.Meta().attrs((at.Charset, "UTF-8")),
+                    tg.Meta().attrs(
+                        (at.Name, "viewport"),
+                        (at.Content, "width=device-width, initial-scale=1.0"),
                     ),
-                    Title().innrs(self.title),
-                    Link().attrs(
+                    tg.Title().innrs(self.model.title),
+                    tg.Link().attrs(
                         (
-                            Href,
+                            at.Href,
                             "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
                         ),
-                        (Rel, "stylesheet"),
+                        (at.Rel, "stylesheet"),
                         (
-                            Integrity,
+                            at.Integrity,
                             "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
                         ),
-                        (Crossorigin, "anonymous"),
+                        (at.Crossorigin, "anonymous"),
                     ),
-                    Script().attrs(
+                    tg.Script().attrs(
                         (
-                            Src,
+                            at.Src,
                             "https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js",
                         ),
                     ),
-                    Link().attrs(
-                        (
-                            Href,
-                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/an-old-hope.min.css",
-                        ),
-                        (Rel, "stylesheet"),
-                    ),
-                    Script().attrs(
-                        (
-                            Src,
-                            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js",
-                        ),
-                    ),
-                    Script().attrs(
-                        (
-                            Src,
-                            "http://127.0.0.1:35729/livereload.js?snipver=1",
-                        ),
-                    ),
                 ),
-                Body()
-                .attrs((Data_Bs_Theme, "dark"))
+                tg.Body()
+                .attrs((at.Data_Bs_Theme, "dark"))
                 .innrs(
-                    self.nav_bar,
-                    *self.innrs,
-                    Script().attrs(
+                    self.model._nav_bar if self.model._nav_bar is not None else "",
+                    *self.model._innrs,
+                    tg.Script().attrs(
                         (
-                            Src,
+                            at.Src,
                             "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
                         ),
                         (
-                            Integrity,
+                            at.Integrity,
                             "sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
                         ),
-                        (Crossorigin, "anonymous"),
+                        (at.Crossorigin, "anonymous"),
                     ),
-                    Script("hljs.highlightAll();"),
+                    tg.Script("hljs.highlightAll();"),
                 ),
             )
         )

@@ -117,8 +117,12 @@ class Tag(ObjReferencingElement):
                 element_temp = element()
                 element_temp.obj = element
                 element = element_temp
-                if element.obj is not None:
-                    element.obj.model.register_component(element.obj)
+                if (
+                    element.obj is not None
+                    and element.obj not in element.obj.model.registered_components
+                ):
+                    # element.obj.model.register_component(element.obj)
+                    pass
             if (
                 issubclass(element.__class__, cmp.Component)
                 and not isinstance(element, str)

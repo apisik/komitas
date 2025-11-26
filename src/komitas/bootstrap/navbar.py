@@ -1,20 +1,25 @@
-from komitas.application.component import ComponentModel, InteractiveComponent, View
+from komitas.application.component import (
+    ComponentModel,
+    InteractiveComponent,
+    View,
+    AppBarButton,
+)
 from komitas.application.component import *
 from komitas.html.tags import *
 from komitas.html.attributes import *
 
 
 class BootstrapNavbarModel(AppBarModel):
-    LogoText: str
+    LogoText: str = "Komitas"
 
 
-class BootsrapNavbarButton(InteractiveComponent):
-    def __init__(self, model: BootstrapNavbarModel, view: View):
-        self.model = model
+class BootstrapNavbarButton(AppBar[BootstrapNavbarModel]):
+    def __init__(self, model, model_extra, view: View):
+        super().__init__(model, model_extra)
         self.view = view
 
     def update_state(self, params):
-        self.model.active_view = self.view
+        self.model._active_view = self.view
 
     def __call__(self):
         return (
@@ -23,33 +28,35 @@ class BootsrapNavbarButton(InteractiveComponent):
                 (Class, "nav-item"),
                 (Hx_Get, ""),
                 (Hx_Swap, "outerHTML"),
-                (Hx_Target, f"#{self.view.name_safe()}-nav-link"),
-                (Id, f"{self.view.name_safe()}-nav-link"),
+                (
+                    Hx_Target,
+                    f"#{self.view.model_extras.name.replace(' ', '-').lower()}-nav-link",
+                ),
+                (
+                    Id,
+                    f"{self.view.model_extras.name.replace(' ', '-').lower()}-nav-link",
+                ),
             )
             .innrs(
-                A(self.view.name()).attrs(
+                A(self.view.model_extras.name).attrs(
                     (Href, "#"),
                     (
                         Class,
-                        f"nav-link{' active' if self.view == self.model.active_view else ''}",
+                        f"nav-link{' active' if self.view is self.model._active_view else ''}",
                     ),
                     *((Aria_Current, "page"),)
-                    if self.view == self.model.active_view
+                    if self.view == self.model._active_view
                     else (),
                 )
             )
         )
 
 
-class CollapsibleNavbar(AppBar):
+class CollapsibleNavbar(AppBar[BootstrapNavbarModel]):
     """
     Renders a Bootstrap collapsible navbar similar to the provided HTML.
     Use with a NavbarModel (or pass a model with .active_view if you need dynamic behaviour).
     """
-
-    def update_state(self, params):
-        if "active_view" in params:
-            self.model.active_view = params["active_view"]
 
     def __call__(self):
         return (
@@ -59,7 +66,7 @@ class CollapsibleNavbar(AppBar):
                 Div()
                 .attrs((Class, "container"))
                 .innrs(
-                    A(self.model.LogoText).attrs((Class, "navbar-brand")),
+                    A(self.model_extras.LogoText).attrs((Class, "navbar-brand")),
                     Button()
                     .attrs(
                         (Class, "navbar-toggler"),
@@ -81,9 +88,34 @@ class CollapsibleNavbar(AppBar):
                         .attrs((Class, "navbar-nav mb-2 mb-lg-0"))
                         .innrs(
                             *[
-                                BootsrapNavbarButton(self.model, view)
-                                for view in self.model.views
+                                BootstrapNavbarButton(
+                                    self.model, self.model_extras, view
+                                )
+                                for view in self.model._views
                             ]
+                            # *[
+                            #     Li()
+                            #     .attrs(
+                            #         (Class, "nav-item"),
+                            #         (Hx_Get, ""),
+                            #         (Hx_Swap, "outerHTML"),
+                            #         (Hx_Target, f"#{view.name_safe()}-nav-link"),
+                            #         (Id, f"{view.name_safe()}-nav-link"),
+                            #     )
+                            #     .innrs(
+                            #         A(view.name()).attrs(
+                            #             (Href, "#"),
+                            #             (
+                            #                 Class,
+                            #                 f"nav-link{' active' if view == self.model.active_view else ''}",
+                            #             ),
+                            #             *((Aria_Current, "page"),)
+                            #             if view == self.model.active_view
+                            #             else (),
+                            #         )
+                            #     )
+                            #     for view in self.model.views
+                            # ]
                         ),
                         Div().attrs(
                             (Class, "me-auto"),

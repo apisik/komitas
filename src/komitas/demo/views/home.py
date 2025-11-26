@@ -7,7 +7,7 @@ class HomeViewModel(ViewModel):
     name: str = "Home"
 
 
-class HomeView(View):
+class HomeView(View[HomeViewModel]):
     def tag(self) -> Tag:
         return (
             Div()

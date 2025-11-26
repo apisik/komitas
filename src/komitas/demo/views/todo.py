@@ -7,14 +7,10 @@ class TodoModel(ViewModel):
     name: str = "To Do"
 
 
-class TodoView(View):
-    def __init__(self, model: TodoModel):
-        self.model = model
-        self.label = "Todo"
-
-    def __call__(self):
+class TodoView(View[TodoModel]):
+    def tag(self) -> Tag:
         return (
             Div()
-            .attrs((Class, "container mt-4"))
+            .attrs((Class, "container mt-4"), (Name, self.model_extras.name))
             .innrs(H2("Todo View"), P("This is a simple Todo view."))
         )

@@ -1,67 +1,66 @@
-from sqlmodel import SQLModel
-from pydantic import GetCoreSchemaHandler
-from pydantic_core import core_schema
-from typing import Generic, TypeVar, Union
+from typing import Generic, Union
 import komitas.html.tags as tg
 import komitas.html.attributes as at
 from types import NoneType
 
 
-class ComponentModel(SQLModel):
-    registered_components: list["Component"] = []
-    name: str
-
-    def register_component(self, component: "Component"):
-        self.registered_components.append(component)
-
-
-TComponentModel = TypeVar("TComponentModel", bound=ComponentModel)
-
-
-class Component(Generic[TComponentModel]):
-    """
-    This is the base class that we extend from to define components.
-    """
-
-    def __init__(self, model: TComponentModel) -> None:
-        self.model: TComponentModel = model
-
-    def __call__(self) -> tg.Tag:
-        return self.tag()
-
-    def tag(self) -> tg.Tag:
-        return tg.Div(tg.P(f"Hello, {self.__class__.__name__}"))
-
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, source, handler: GetCoreSchemaHandler
-    ) -> core_schema.CoreSchema:
-        return core_schema.is_instance_schema(cls)
+from komitas.application.base_component import *
 
 
 class PageBaseModel(ComponentModel):
-    pass
+    title: str = "Page Base!"
+    _nav_bar: AppBar | None = PrivateAttr(default=None)
+    _innrs: list[Component] = PrivateAttr(default_factory=list)
 
 
-class PageBase(Component[PageBaseModel]):
-    title: str = "Base Page Title"
-    innrs: list[Union[Component, tg.Tag]] = []
-
-    def __init__(self, *args) -> None:
-        self.nav_bar: Union["AppBar", tg.Tag] = tg.Div()
-        super().__init__(*args)
-
+class PageBase[TX](Component[PageBaseModel, TX]):
     def tag(self) -> tg.Tag:
-        return tg.Div(tg.H1(self.title), *self.innrs)
+        return tg.Div(tg.H1(self.model.title), *self.model._innrs)
 
 
-class InteractiveComponent(Component, Generic[TComponentModel]):
+class InteractiveComponent[T, TX](Component[T, TX]):
     """
     We subclass component and add the funcitonality for updating state.
     """
 
-    def __init__(self, model: TComponentModel) -> None:
-        self.model: TComponentModel = model
+    # _model_type: type[] | None = None
+    # _model_extras_type: type[TXComponentModel] | None = None
+    #
+    # def __init_subclass__(cls, **kwargs):
+    #     """
+    #     When someone does:
+    #
+    #         class MyComp(InteractiveComponent[MyModel, MyExtras]): ...
+    #
+    #     we grab `MyModel` and store it in `cls._model_type`.
+    #     """
+    #     super().__init_subclass__(**kwargs)
+    #
+    #     # Look through the generic bases
+    #     for base in getattr(cls, "__orig_bases__", ()):
+    #         origin = get_origin(base)
+    #         if origin is InteractiveComponent:
+    #             args = get_args(base)
+    #             if args:
+    #                 # args[0] is TComponentModel, args[1] is TXComponentModel
+    #                 cls._model_type = args[0]
+    #                 cls._model_extras_type = args[1]
+    #             break
+    #
+    # def __init__(
+    #     self,
+    #     model: Union[TComponentModel, NoneType] = None,
+    #     model_extras: Union[TXComponentModel, NoneType] = None,
+    #     **kwargs,
+    # ) -> None:
+    #     assert self._model_type is not None
+    #     if self._model_type:
+    #         self.model: TComponentModel = model or self._model_type()
+    #     assert self._model_extras_type is not None
+    #     if model_extras:
+    #         self.model_extras: TXComponentModel = (
+    #             model_extras or self._model_extras_type()
+    #         )
 
     def update_state(self, params):
         raise NotImplementedError
@@ -74,26 +73,30 @@ class InteractiveComponent(Component, Generic[TComponentModel]):
 
 
 class ViewModel(ComponentModel):
-    name: str
+    pass
 
 
-class View(InteractiveComponent[ViewModel]):
+class View[TX](InteractiveComponent[ViewModel, TX]):
     pass
 
 
 class AppBarModel(ComponentModel):
-    active_view: Union[View, NoneType] = None
-    views: set[View] = set()
+    _active_view: Union[View, NoneType] = PrivateAttr(default=None)
+    _views: list[View] = PrivateAttr(default_factory=list)
 
 
-class AppBar(InteractiveComponent[AppBarModel]):
+class AppBarButton[TX](InteractiveComponent[AppBarModel, TX]):
+    pass
+
+
+class AppBar[TX](InteractiveComponent[AppBarModel, TX]):
     def register_views(self, *args: View):
-        if not self.model.active_view:
-            self.model.active_view = args[0]
-        self.model.views.update(args)
+        self.model._views.extend(args)
+        if not self.model._active_view:
+            self.model._active_view = args[0]
 
 
-class ViewContainer(InteractiveComponent[AppBarModel]):
+class ViewContainer[TX](InteractiveComponent[AppBarModel, TX]):
     def update_state(self, params):
         pass
 
@@ -103,5 +106,5 @@ class ViewContainer(InteractiveComponent[AppBarModel]):
             .attrs(
                 (at.Id, "view-container"),
             )
-            .innrs(self.model.active_view)
+            .innrs(self.model._active_view)
         )

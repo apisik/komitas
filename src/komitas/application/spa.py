@@ -8,8 +8,16 @@ A single page app consists of a number of components:
     3) A base HTML structure
 """
 
+from komitas.application.base_component import Component
 from komitas.application.state import State
-from komitas.application.component import AppBar, PageBase
+from komitas.application.component import (
+    AppBar,
+    PageBase,
+    PageBaseModel,
+    AppBarModel,
+    ComponentModel,
+    ViewModel,
+)
 from komitas.html.attributes import Hx_Swap_Oob
 import inspect
 import xml.etree.ElementTree as ET
@@ -22,13 +30,27 @@ class SinglePageAppState(State):
 
 
 class SinglePageApp:
-    base_html: PageBase
-    nav_bar: AppBar
-    views: list[View]
+    base_html: tuple[type[PageBase], type[PageBaseModel], type[ComponentModel]]
+    nav_bar: tuple[type[AppBar], type[AppBarModel], type[ComponentModel]]
+    views: list[tuple[type[View], type[ViewModel], type[ComponentModel]]]
 
     def __init__(self) -> None:
-        self.nav_bar.register_views(*self.views)
-        self.base_html.nav_bar = self.nav_bar
+        self._views = [x(y, z) for x, y, z in self.views]
+        nb, nbm, nbd = self.nav_bar
+
+        nmodels = nbm()
+        nmodels._views = self._views
+        nmodels._active_view = self._views[0]
+
+        self._nav_bar = nb(nmodels, nbd)
+
+        bh, bhm, bhd = self.base_html
+        model = bhm()
+        model._nav_bar = self._nav_bar
+        self._base_html = bh(model, bhd)
+
+        print(len(self._nav_bar.model._associated_components))
+        print(self._nav_bar.model._associated_components)
 
     def render(self, request) -> str:
         # check if hx-request header is present
@@ -43,10 +65,10 @@ class SinglePageApp:
             return ET.tostring(r, encoding="unicode", short_empty_elements=False)
 
     def index(self) -> Tag:
-        return self.base_html.tag().build()
+        return self._base_html.tag().build()
 
     def index_partial(self, trigger_id, query_parameters) -> str:
-        html = self.base_html.tag().build()
+        html = self._base_html.tag().build()
         target = html.find(f".//*[@id='{trigger_id}']")
 
         if target is None:
